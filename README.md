@@ -1,7 +1,6 @@
 # Issue Comment GitHub Action
 
-[![Build & Test](https://github.com/badsyntax/github-action-issue-comment/actions/workflows/test.yml/badge.svg)](https://github.com/badsyntax/github-action-issue-comment/actions/workflows/test.yml)
-[![Issue Comment](https://github.com/badsyntax/github-action-issue-comment/actions/workflows/issue-comment.yml/badge.svg)](https://github.com/badsyntax/github-action-issue-comment/actions/workflows/issue-comment.yml)
+[![Build & Test](https://github.com/badsyntax/github-action-issue-comment/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/badsyntax/github-action-issue-comment/actions/workflows/test.yml)
 
 Comment on a GitHub Issue using a Handlebars template.
 
