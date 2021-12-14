@@ -1,5 +1,5 @@
 name: 'Issue Comment (Handlebars)'
-description: 'Comment on an issue using a Handlebars template'
+description: 'Comment on a GitHub issue using a Handlebars template'
 author: 'Richard Willis <willis.rh@gmail.com>'
 branding:
   icon: 'upload-cloud'
@@ -19,7 +19,7 @@ inputs:
     description: 'The unique id to track the comment. For example: deploy'
   issueNumber:
     required: true
-    description: 'The issue number. For example: 1'
+    description: 'The GitHub issue number. For example: 1'
   token:
     required: true
     description: 'GITHUB_TOKEN (issues: write, pull-requests: write) or a repo scoped PAT'
