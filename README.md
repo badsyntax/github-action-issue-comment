@@ -9,7 +9,7 @@ Features:
 
 - Create comment
 - Update comment
-- Delete & Create comment
+- Delete comment
 
 ## Getting Started
 
@@ -31,7 +31,7 @@ jobs:
         name: Comment on Pull Request
         if: github.event_name == 'pull_request'
         with:
-          action: 'create-clean', # one of "create", "update", or "create-clean"
+          action: 'create-clean', # one of "create", "update", "delete", or "create-clean"
           template: '.github/pr-comment-template.hbs'
           id: example
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -45,13 +45,13 @@ jobs:
 
 ## Action Inputs
 
-| Name              | Description                                                                                                                                                                                                                                                      | Example                                                                         |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `action`          | Action, one of `update`, `create`, or `create-clean`'. The `update` action will first create a comment if it doesn't exist, else update it. `create` will create a new comment. `create-clean` will first delete the existing comment, then create a new comment | `update`                                                                        |
-| `template`        | The path to the handlebars template file                                                                                                                                                                                                                         | `./.github/pr-comment-template.hbs`                                             |
-| `template-inputs` | A JSON string object of key value pairs (can include newlines)                                                                                                                                                                                                   | `{"key":"value"}`                                                               |
-| `token`           | GITHUB_TOKEN (issues: write, pull-requests: write) or a repo scoped PAT                                                                                                                                                                                          | `${{ secrets.GITHUB_TOKEN }}`                                                   |
-| `issue-number`    | The GitHub issue number                                                                                                                                                                                                                                          | `${{ github.event.pull_request.number }}` or `${{ github.event.issue.number }}` |
+| Name              | Description                                                                                                                                                                                                                            | Example                                                                         |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `action`          | Action, one of `update`, `create`, `delete`, or `create-clean`'. The `update` action will first create a comment if it doesn't exist, else update it. `create-clean` will first delete the existing comment, then create a new comment | `update`                                                                        |
+| `template`        | The path to the handlebars template file                                                                                                                                                                                               | `./.github/pr-comment-template.hbs`                                             |
+| `template-inputs` | A JSON string object of key value pairs (can include newlines)                                                                                                                                                                         | `{"key":"value"}`                                                               |
+| `token`           | GITHUB_TOKEN (issues: write, pull-requests: write) or a repo scoped PAT                                                                                                                                                                | `${{ secrets.GITHUB_TOKEN }}`                                                   |
+| `issue-number`    | The GitHub issue number                                                                                                                                                                                                                | `${{ github.event.pull_request.number }}` or `${{ github.event.issue.number }}` |
 
 ## Related Projects
 
