@@ -17,10 +17,10 @@ jobs:
         with:
           action: 'create-clean'
           id: example
-          issueNumber: ${{ github.event.pull_request.number }}
+          issue-number: ${{ github.event.pull_request.number }}
           template: '.github/pr-comment-template.hbs'
           token: ${{ secrets.GITHUB_TOKEN }}
-          templateInputs: |
+          template-inputs: |
             {
               "firstName": "Bob",
               "lastName": "Marley"

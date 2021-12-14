@@ -11,13 +11,13 @@ inputs:
   template:
     required: true
     description: 'The path to the handlebars template file. For example: ./.github/pr-comment-template.hbs'
-  templateInputs:
+  template-inputs:
     required: true
     description: 'A JSON object of key value pairs. For example: {"key":"value"}'
   id:
     required: true
     description: 'The unique id to track the comment. For example: deploy'
-  issueNumber:
+  issue-number:
     required: true
     description: 'The GitHub issue number. For example: 1'
   token:
@@ -33,7 +33,7 @@ runs:
         script: |
           core.setOutput(
             'template-comment-id',
-            `(ID: ${{ inputs.id }}-${{ inputs.issueNumber }})`
+            `(ID: ${{ inputs.id }}-${{ inputs.issue-number }})`
           );
 
     - uses: badsyntax/github-action-render-template@v0.0.1
@@ -43,7 +43,7 @@ runs:
         template: ${{ inputs.template }}
         inputs: |
           {
-            "inputs": ${{ inputs.templateInputs }},
+            "inputs": ${{ inputs.template-inputs }},
             "id": "${{ steps.template-comment-id.outputs.template-comment-id }}"
           }
 
@@ -52,7 +52,7 @@ runs:
       if: inputs.action == 'update' || inputs.action == 'create-clean'
       id: find-comment
       with:
-        issue-number: ${{ inputs.issueNumber }}
+        issue-number: ${{ inputs.issue-number }}
         body-includes: ${{ steps.template-comment-id.outputs.template-comment-id }}
         token: ${{ inputs.token }}
 
@@ -82,5 +82,5 @@ runs:
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ inputs.token }}
-        issue-number: ${{ inputs.issueNumber }}
+        issue-number: ${{ inputs.issue-number }}
         body: ${{ steps.render-template.outputs.result }}
