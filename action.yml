@@ -1,0 +1,86 @@
+name: 'Issue Comment (Handlebars)'
+description: 'Comment on an issue using a Handlebars template'
+author: 'Richard Willis <willis.rh@gmail.com>'
+branding:
+  icon: 'upload-cloud'
+  color: 'gray-dark'
+inputs:
+  action:
+    required: true
+    description: 'Action, one of "update", "create", or "create-clean". The "create-clean" action will first delete the existing comment, then create a new comment'
+  template:
+    required: true
+    description: 'The path to the handlebars template file. For example: ./.github/pr-comment-template.hbs'
+  templateInputs:
+    required: true
+    description: 'A JSON object of key value pairs. For example: {"key":"value"}'
+  id:
+    required: true
+    description: 'The unique id to track the comment. For example: deploy'
+  issueNumber:
+    required: true
+    description: 'The issue number. For example: 1'
+  token:
+    required: true
+    description: 'GITHUB_TOKEN (issues: write, pull-requests: write) or a repo scoped PAT'
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate Template Comment Id
+      uses: actions/github-script@v5
+      id: template-comment-id
+      with:
+        script: |
+          core.setOutput(
+            'template-comment-id',
+            `(ID: ${{ inputs.id }}-${{ inputs.issueNumber }})`
+          );
+
+    - uses: badsyntax/github-action-render-template@v0.0.1
+      name: Render Comment Template
+      id: render-template
+      with:
+        template: ${{ inputs.template }}
+        inputs: |
+          {
+            "inputs": ${{ inputs.templateInputs }},
+            "id": "${{ steps.template-comment-id.outputs.template-comment-id }}"
+          }
+
+    - name: Find PR Comment
+      uses: peter-evans/find-comment@v1
+      if: inputs.action == 'update' || inputs.action == 'create-clean'
+      id: find-comment
+      with:
+        issue-number: ${{ inputs.issueNumber }}
+        body-includes: ${{ steps.template-comment-id.outputs.template-comment-id }}
+        token: ${{ inputs.token }}
+
+    - name: Delete comment
+      uses: actions/github-script@v5
+      if: inputs.action == 'create-clean' && steps.find-comment.outputs.comment-id != ''
+      with:
+        script: |
+          await github.rest.issues.deleteComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            comment_id: ${{ steps.find-comment.outputs.comment-id }},
+          });
+
+    - name: Update comment
+      if: inputs.action == 'update' && steps.find-comment.outputs.comment-id != ''
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        token: ${{ inputs.token }}
+        comment-id: ${{ steps.find-comment.outputs.comment-id }}
+        body: ${{ steps.render-template.outputs.result }}
+        edit-mode: 'replace'
+
+    - name: Create comment
+      if: inputs.action == 'create' || inputs.action == 'create-clean' || (inputs.action == 'update' && steps.find-comment.outputs.comment-id == '')
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        token: ${{ inputs.token }}
+        issue-number: ${{ inputs.issueNumber }}
+        body: ${{ steps.render-template.outputs.result }}
