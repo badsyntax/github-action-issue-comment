@@ -53,6 +53,10 @@ jobs:
 | `token`          | GITHUB_TOKEN (issues: write, pull-requests: write) or a repo scoped PAT                                                                                                                                                                                         | `${{ secrets.GITHUB_TOKEN }}`                                                   |
 | `issueNumber`    | The GitHub issue number                                                                                                                                                                                                                                         | `${{ github.event.pull_request.number }}` or `${{ github.event.issue.number }}` |
 
+## Related Projects
+
+- [badsyntax/github-action-render-template](https://github.com/badsyntax/github-action-render-template)
+
 ## Support
 
 - 👉 [Submit a bug report](https://github.com/badsyntax/github-action-issue-comment/issues/new?assignees=badsyntax&labels=bug&template=bug_report.md&title=)
