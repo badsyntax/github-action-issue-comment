@@ -1,0 +1,29 @@
+name: 'Issue Comment'
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: 'Comment on Pull Request'
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: ./
+        name: Comment
+        with:
+          action: 'create-clean'
+          id: example
+          issueNumber: ${{ github.event.pull_request.number }}
+          template: '.github/pr-comment-template.hbs'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          templateInputs: |
+            {
+              "firstName": "Bob",
+              "lastName": "Marley"
+            }

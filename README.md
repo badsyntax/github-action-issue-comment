@@ -30,6 +30,8 @@ jobs:
         with:
           action: 'create-clean', # one of "create", "update", or "create-clean"
           template: '.github/pr-comment-template.hbs'
+          id: example
+          issueNumber: ${{ github.event.pull_request.number }}
           templateInputs: |
             {
               "firstName": "Bob",
@@ -44,6 +46,7 @@ jobs:
 | `action`         | Action, one of "update", "create", or "create-clean'. The "update" action will first create a comment if it doesn't exist, else update it. "create" will create a new comment. "create-clean" will first delete the existing comment, then create a new comment | `update`                            |
 | `template`       | The path to the handlebars template file                                                                                                                                                                                                                        | `./.github/pr-comment-template.hbs` |
 | `templateInputs` | A JSON string object of key value pairs (can include newlines)                                                                                                                                                                                                  | `{"key":"value"}`                   |
+| `token`          | GITHUB_TOKEN (issues: write, pull-requests: write) or a repo scoped PAT                                                                                                                                                                                         | `${{ secrets.GITHUB_TOKEN }}`       |
 
 ## License
 
