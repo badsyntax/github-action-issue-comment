@@ -7,7 +7,7 @@ branding:
 inputs:
   action:
     required: true
-    description: 'Action, one of "update", "create", or "create-clean". The "create-clean" action will first delete the existing comment, then create a new comment'
+    description: 'Action, one of "update", "create", "delete", or "create-clean". The "create-clean" action will first delete the existing comment, then create a new comment'
   template:
     required: true
     description: 'The path to the handlebars template file. For example: ./.github/pr-comment-template.hbs'
@@ -38,6 +38,7 @@ runs:
 
     - uses: badsyntax/github-action-render-template@v0.0.1
       name: Render Comment Template
+      if: inputs.action != 'delete'
       id: render-template
       with:
         template: ${{ inputs.template }}
@@ -49,7 +50,7 @@ runs:
 
     - name: Find PR Comment
       uses: peter-evans/find-comment@v1
-      if: inputs.action == 'update' || inputs.action == 'create-clean'
+      if: inputs.action != 'create'
       id: find-comment
       with:
         issue-number: ${{ inputs.issue-number }}
@@ -58,7 +59,7 @@ runs:
 
     - name: Delete comment
       uses: actions/github-script@v5
-      if: inputs.action == 'create-clean' && steps.find-comment.outputs.comment-id != ''
+      if: (inputs.action == 'delete' || inputs.action == 'create-clean') && steps.find-comment.outputs.comment-id != ''
       with:
         script: |
           await github.rest.issues.deleteComment({
