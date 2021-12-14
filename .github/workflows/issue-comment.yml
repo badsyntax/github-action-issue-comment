@@ -15,7 +15,7 @@ jobs:
       - uses: ./
         name: Comment
         with:
-          action: 'delete'
+          action: 'create-clean'
           id: example
           issue-number: ${{ github.event.pull_request.number }}
           template: '.github/pr-comment-template.hbs'
