@@ -43,6 +43,7 @@ jobs:
 
       - uses: badsyntax/github-action-issue-comment@master
         name: Comment on Pull Request With Body
+        if: github.event_name == 'pull_request'
         with:
           action: 'create-clean'
           id: example2
