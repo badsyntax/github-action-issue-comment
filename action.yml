@@ -9,11 +9,17 @@ inputs:
     required: true
     description: 'Action, one of "update", "create", "delete", or "create-clean". The "create-clean" action will first delete the existing comment, then create a new comment'
   template:
-    required: true
-    description: 'The path to the handlebars template file. For example: ./.github/pr-comment-template.hbs'
+    required: false
+    default: ''
+    description: 'The path to the handlebars template file, if not using the body options (optional). For example: ./.github/pr-comment-template.hbs'
+  body:
+    required: false
+    default: ''
+    description: 'The comment body, if not using the template option (optional). For example: "a message"'
   template-inputs:
-    required: true
-    description: 'A JSON object of key value pairs. For example: {"key":"value"}'
+    required: false
+    default: ''
+    description: 'A JSON object of key value pairs (required only if using the template option). For example: {"key":"value"}'
   id:
     required: true
     description: 'The unique id to track the comment. For example: deploy'
@@ -38,7 +44,7 @@ runs:
 
     - uses: badsyntax/github-action-render-template@v0.0.1
       name: Render Comment Template
-      if: inputs.action != 'delete'
+      if: inputs.action != 'delete' && inputs.template != ''
       id: render-template
       with:
         template: ${{ inputs.template }}
@@ -47,6 +53,17 @@ runs:
             "inputs": ${{ inputs.template-inputs }},
             "id": "${{ steps.template-comment-id.outputs.template-comment-id }}"
           }
+
+    - uses: actions/github-script@v5
+      name: Render Comment Body
+      if: inputs.action != 'delete' && inputs.body != ''
+      id: render-body
+      with:
+        script: |
+          core.setOutput(
+            'body',
+            '${{inputs.body}}\n\n`${{ steps.template-comment-id.outputs.template-comment-id }}`'
+          );
 
     - name: Find PR Comment
       uses: peter-evans/find-comment@v1
@@ -57,7 +74,7 @@ runs:
         body-includes: ${{ steps.template-comment-id.outputs.template-comment-id }}
         token: ${{ inputs.token }}
 
-    - name: Delete comment
+    - name: Delete Comment
       uses: actions/github-script@v5
       if: (inputs.action == 'delete' || inputs.action == 'create-clean') && steps.find-comment.outputs.comment-id != ''
       with:
@@ -69,19 +86,19 @@ runs:
             comment_id: ${{ steps.find-comment.outputs.comment-id }},
           });
 
-    - name: Update comment
+    - name: Update Comment
       if: inputs.action == 'update' && steps.find-comment.outputs.comment-id != ''
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ inputs.token }}
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
-        body: ${{ steps.render-template.outputs.result }}
+        body: ${{ steps.render-template.outputs.result || steps.render-body.outputs.body }}
         edit-mode: 'replace'
 
-    - name: Create comment
+    - name: Create Comment
       if: inputs.action == 'create' || inputs.action == 'create-clean' || (inputs.action == 'update' && steps.find-comment.outputs.comment-id == '')
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ inputs.token }}
         issue-number: ${{ inputs.issue-number }}
-        body: ${{ steps.render-template.outputs.result }}
+        body: ${{ steps.render-template.outputs.result || steps.render-body.outputs.body }}

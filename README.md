@@ -2,7 +2,7 @@
 
 [![Build & Test](https://github.com/badsyntax/github-action-issue-comment/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/badsyntax/github-action-issue-comment/actions/workflows/test.yml)
 
-Comment on a GitHub Issue using a Handlebars template.
+Comment on a GitHub Issue using an optional Handlebars template or body string. No need to manually find an existing comment to update, just supply a custom comment ID and the Action will track the comment automatically.
 
 Features:
 
@@ -26,8 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: badsyntax/github-action-issue-comment@v0.0.1
-        name: Comment on Pull Request
+      - uses: badsyntax/github-action-issue-comment@master
+        name: Comment on Pull Request With Template
         if: github.event_name == 'pull_request'
         with:
           action: 'create-clean', # one of "create", "update", "delete", or "create-clean"
@@ -40,6 +40,15 @@ jobs:
               "firstName": "Bob",
               "lastName": "Marley"
             }
+
+      - uses: badsyntax/github-action-issue-comment@master
+        name: Comment on Pull Request With Body
+        with:
+          action: 'create-clean'
+          id: example2
+          issue-number: ${{ github.event.pull_request.number }}
+          body: 'Test comment'
+          token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Action Inputs
@@ -47,8 +56,9 @@ jobs:
 | Name              | Description                                                                                                                                                                                                                            | Example                                                                         |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | `action`          | Action, one of `update`, `create`, `delete`, or `create-clean`'. The `update` action will first create a comment if it doesn't exist, else update it. `create-clean` will first delete the existing comment, then create a new comment | `update`                                                                        |
-| `template`        | The path to the handlebars template file                                                                                                                                                                                               | `./.github/pr-comment-template.hbs`                                             |
-| `template-inputs` | A JSON string object of key value pairs (can include newlines)                                                                                                                                                                         | `{"key":"value"}`                                                               |
+| `template`        | The path to the handlebars template file, if not using the `body` option (optional)                                                                                                                                                    | `./.github/pr-comment-template.hbs`                                             |
+| `body`            | The comment body, if not using the `template` option (optional)                                                                                                                                                                        | "a message"                                                                     |
+| `template-inputs` | A JSON object of key value pairs (required only if using the `template` option) (can include newlines)                                                                                                                                 | `{"key":"value"}`                                                               |
 | `token`           | GITHUB_TOKEN (issues: write, pull-requests: write) or a repo scoped PAT                                                                                                                                                                | `${{ secrets.GITHUB_TOKEN }}`                                                   |
 | `issue-number`    | The GitHub issue number                                                                                                                                                                                                                | `${{ github.event.pull_request.number }}` or `${{ github.event.issue.number }}` |
 
