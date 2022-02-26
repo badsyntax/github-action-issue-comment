@@ -6,6 +6,9 @@ on:
 
 jobs:
   deploy:
+    strategy:
+      matrix:
+        account: [aa-a, aa-b, aa-c, aa-d, aa-e, aa-f]
     name: 'Comment on Pull Request'
     runs-on: ubuntu-20.04
     if: github.actor != 'dependabot[bot]' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
@@ -16,7 +19,7 @@ jobs:
         name: Template Comment
         with:
           action: 'create-clean'
-          id: example
+          id: example-${{ matrix.account }}
           issue-number: ${{ github.event.pull_request.number }}
           template: '.github/pr-comment-template.hbs'
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -26,11 +29,11 @@ jobs:
               "lastName": "Marley"
             }
 
-      - uses: ./
-        name: Body Comment
-        with:
-          action: 'create-clean'
-          id: example2
-          issue-number: ${{ github.event.pull_request.number }}
-          body: 'Test comment'
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: ./
+      #   name: Body Comment
+      #   with:
+      #     action: 'create-clean'
+      #     id: example2
+      #     issue-number: ${{ github.event.pull_request.number }}
+      #     body: 'Test comment'
+      #     token: ${{ secrets.GITHUB_TOKEN }}
