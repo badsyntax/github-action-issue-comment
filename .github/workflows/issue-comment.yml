@@ -19,7 +19,7 @@ jobs:
         name: Template Comment
         with:
           action: 'create-clean'
-          id: example
+          id: example-${{ matrix.account }}
           issue-number: ${{ github.event.pull_request.number }}
           template: '.github/pr-comment-template.hbs'
           token: ${{ secrets.GITHUB_TOKEN }}
