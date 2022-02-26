@@ -12,6 +12,8 @@ Features:
 
 ## Getting Started
 
+### Actions yml
+
 ```yml
 name: 'Comment On Pull Request'
 
@@ -50,6 +52,24 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: 'Test comment'
           token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Comment Id
+
+If you're you are using a matrix strategy, you must make the id unique by appending the matrix id to it, for example:
+
+```yml
+jobs:
+  example:
+    strategy:
+      matrix:
+        account: [aa-a, aa-b, aa-c, aa-d, aa-e, aa-f]
+    # ...
+    steps:
+      - uses: badsyntax/github-action-issue-comment@master
+        name: Template Comment
+          id: example-${{ matrix.account }}
+          # ...
 ```
 
 ## Action Inputs
