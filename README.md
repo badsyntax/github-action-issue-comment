@@ -56,7 +56,7 @@ jobs:
 
 ### Comment Id
 
-If you're you are using a matrix strategy, you must make the id unique by appending the matrix id to it, for example:
+The comment ID _must be unique_ across jobs and matrix runs, for example:
 
 ```yml
 jobs:
@@ -68,7 +68,7 @@ jobs:
     steps:
       - uses: badsyntax/github-action-issue-comment@master
         name: Template Comment
-          id: example-${{ matrix.account }}
+          id: example-job-${{ matrix.account }}
           # ...
 ```
 
