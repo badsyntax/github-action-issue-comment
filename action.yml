@@ -42,7 +42,7 @@ runs:
             `(ID: ${{ inputs.id }}-${{ inputs.issue-number }})`
           );
 
-    - uses: badsyntax/github-action-render-template@v1.0.0
+    - uses: badsyntax/github-action-render-template@v1.0.1
       name: Render Comment Template
       if: inputs.action != 'delete' && inputs.template != ''
       id: render-template
@@ -66,7 +66,7 @@ runs:
           );
 
     - name: Find PR Comment
-      uses: peter-evans/find-comment@v1
+      uses: peter-evans/find-comment@v2
       if: inputs.action != 'create'
       id: find-comment
       with:
@@ -88,7 +88,7 @@ runs:
 
     - name: Update Comment
       if: inputs.action == 'update' && steps.find-comment.outputs.comment-id != ''
-      uses: peter-evans/create-or-update-comment@v1
+      uses: peter-evans/create-or-update-comment@v2
       with:
         token: ${{ inputs.token }}
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
@@ -97,7 +97,7 @@ runs:
 
     - name: Create Comment
       if: inputs.action == 'create' || inputs.action == 'create-clean' || (inputs.action == 'update' && steps.find-comment.outputs.comment-id == '')
-      uses: peter-evans/create-or-update-comment@v1
+      uses: peter-evans/create-or-update-comment@v2
       with:
         token: ${{ inputs.token }}
         issue-number: ${{ inputs.issue-number }}
